@@ -29,9 +29,15 @@ var (
 
 // 获取token
 func loginAndGetToken() (string, error) {
+	name := conf.GlobalConfig.Alist.Username
+	pass, err := AESDecrypt(conf.GlobalConfig.Alist.Password)
+	if err != nil {
+		return "", err
+	}
+
 	body := LoginBody{
-		Username: conf.GlobalConfig.Alist.Username,
-		Password: conf.GlobalConfig.Alist.Password,
+		Username: name,
+		Password: pass,
 	}
 
 	header := map[string]string{
@@ -57,7 +63,7 @@ func loginAndGetToken() (string, error) {
 	if resp.Code != 200 {
 		return "", errors.New(resp.Message)
 	}
-
+	slog.Info("成功获取 Alist token.")
 	return resp.Data.Token, nil
 }
 
