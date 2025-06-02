@@ -10,8 +10,7 @@ import (
 
 func IndexPage(router *gin.Engine) {
 	router.GET("/", controller.Index)
-	router.POST("/api/upload/form", controller.UploadForm)
-	router.PUT("/api/upload/stream", controller.UploadStream)
+	router.POST("/api/upload", controller.UploadForm)
 }
 
 // 中间件
