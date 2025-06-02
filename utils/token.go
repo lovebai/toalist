@@ -3,9 +3,10 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"time"
-	"github.com/lovebai/toalist/conf"
 	"log/slog"
+	"time"
+
+	"github.com/lovebai/toalist/conf"
 )
 
 type LoginBody struct {
@@ -22,17 +23,17 @@ type Response struct {
 }
 
 var (
-	token string
+	token           string
 	tokenExpireTime time.Time
 )
 
 // 获取token
-func loginAndGetToken() (string,error) {
+func loginAndGetToken() (string, error) {
 	body := LoginBody{
 		Username: conf.GlobalConfig.Alist.Username,
 		Password: conf.GlobalConfig.Alist.Password,
 	}
-	
+
 	header := map[string]string{
 		"Content-Type": "application/json",
 	}
@@ -42,7 +43,7 @@ func loginAndGetToken() (string,error) {
 		return "", err
 	}
 
-	data, err := HttpClient(conf.GlobalConfig.Alist.APIURL + "/api/auth/login", "POST", jsonBody, header)
+	data, err := HttpClient(conf.GlobalConfig.Alist.APIURL+"/api/auth/login", "POST", jsonBody, header)
 	if err != nil {
 		return "", err
 	}
@@ -54,7 +55,7 @@ func loginAndGetToken() (string,error) {
 	}
 
 	if resp.Code != 200 {
-		return "" , errors.New(resp.Message)
+		return "", errors.New(resp.Message)
 	}
 
 	return resp.Data.Token, nil
@@ -68,10 +69,10 @@ func RefreshToken() {
 			// slog.Info("自动 Token 刷新已启动")
 			if err != nil {
 				slog.Error("Failed to refresh token", "error", err)
-			}else{
+			} else {
 				token = t
 				tokenExpireTime = time.Now().Add(time.Hour * 48)
-				slog.Info("Token refreshed", "token", token)
+				// slog.Info("Token refreshed", "token", token)
 			}
 			time.Sleep(time.Hour * 47)
 		}
