@@ -51,6 +51,71 @@
             z-index: 100;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            margin-left: 20px;
+        }
+
+        .nav-link {
+            color: var(--el-text-color-primary);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--el-color-primary);
+            background-color: var(--el-fill-color-light);
+        }
+
+        .nav-link.active {
+            color: var(--el-color-primary);
+            /* background-color: var(--el-fill-color-light); */
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .api-content, .about-content {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: var(--el-bg-color);
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .api-content pre {
+            background-color: var(--el-fill-color-light);
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        [data-theme="dark"] .api-content pre {
+            background-color: var(--el-bg-color);
+            border: 1px solid var(--el-border-color-darker);
+			color: #ffffff;
+        }
+
+        .about-content p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
         .header-right {
             display: flex;
             align-items: center;
@@ -252,7 +317,14 @@
 <body>
     <div id="app">
         <div class="header">
-            <h2>ToAlist</h2>
+            <div class="header-left">
+                <h2>ToAlist</h2>
+                <div class="nav-links">
+                    <a href="#" class="nav-link" :class="{ active: currentView === 'upload' }" @click.prevent="switchView('upload')">上传</a>
+                    <a href="#" class="nav-link" :class="{ active: currentView === 'api' }" @click.prevent="switchView('api')">API</a>
+                    <a href="#" class="nav-link" :class="{ active: currentView === 'about' }" @click.prevent="switchView('about')">关于</a>
+                </div>
+            </div>
             <div class="header-right">
                 <a href="https://github.com/lovebai/toalist" target="_blank" class="github-link" title="GitHub 仓库">
                     <el-icon class="github-icon"><svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ea893728=""><path fill="currentColor" d="M512 0C229.76 0 0 229.76 0 512c0 226.56 146.56 417.92 350.08 485.76 25.6 4.48 35.2-10.88 35.2-24.32 0-12.16-.64-52.48-.64-95.36-128.64 23.68-161.92-31.36-172.16-60.16-5.76-14.72-30.72-60.16-52.48-72.32-17.92-9.6-43.52-33.28-.64-33.92 40.32-.64 69.12 37.12 78.72 52.48 46.08 77.44 119.68 55.68 149.12 42.24 4.48-33.28 17.92-55.68 32.64-68.48-113.92-12.8-232.96-56.96-232.96-252.8 0-55.68 19.84-101.76 52.48-137.6-5.12-12.8-23.04-65.28 5.12-135.68 0 0 42.88-13.44 140.8 52.48 40.96-11.52 84.48-17.28 128-17.28 43.52 0 87.04 5.76 128 17.28 97.92-66.56 140.8-52.48 140.8-52.48 28.16 70.4 10.24 122.88 5.12 135.68 32.64 35.84 52.48 81.92 52.48 137.6 0 196.48-119.68 240-233.6 252.8 18.56 16 34.56 46.72 34.56 94.08 0 68.48-.64 123.52-.64 140.8 0 13.44 9.6 29.44 35.2 24.32C877.44 929.92 1024 737.92 1024 512 1024 229.76 794.24 0 512 0z"></path></svg></el-icon>
@@ -268,82 +340,137 @@
         </div>
 
         <div class="container">
-            <div class="upload-container">
-                <el-upload
-                    ref="uploadRef"
-                    class="upload-area"
-                    drag
-                    multiple
-                    :auto-upload="false"
-                    :on-change="handleFileChange"
-                    :on-remove="handleFileRemove"
-                    :file-list="fileList"
-                >
-                    <svg class="upload-icon" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 22V13M12 13L15.5 16.5M12 13L8.5 16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M20 17.6073C21.4937 17.0221 23 15.6889 23 13C23 9 19.6667 8 18 8C18 6 18 2 12 2C6 2 6 6 6 8C4.33333 8 1 9 1 13C1 15.6889 2.50628 17.0221 4 17.6073" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                    <div class="el-upload__text">
-                        将文件拖到此处，或<em>点击上传</em>
-                    </div>
-                </el-upload>
+            <div class="content-section" :class="{ active: currentView === 'upload' }">
+                <div class="upload-container">
+                    <el-upload
+                        ref="uploadRef"
+                        class="upload-area"
+                        drag
+                        multiple
+                        :auto-upload="false"
+                        :on-change="handleFileChange"
+                        :on-remove="handleFileRemove"
+                        :file-list="fileList"
+                    >
+                        <svg class="upload-icon" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22V13M12 13L15.5 16.5M12 13L8.5 16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M20 17.6073C21.4937 17.0221 23 15.6889 23 13C23 9 19.6667 8 18 8C18 6 18 2 12 2C6 2 6 6 6 8C4.33333 8 1 9 1 13C1 15.6889 2.50628 17.0221 4 17.6073" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                        <div class="el-upload__text">
+                            将文件拖到此处，或<em>点击上传</em>
+                        </div>
+                    </el-upload>
 
-                <div class="file-list" v-if="fileList.length > 0">
-                    <div style="margin-top: 10px;">
-                        <el-button type="primary" @click="submitUpload">开始上传</el-button>
-                        <el-button type="danger" @click="clearFiles">清空文件</el-button>
+                    <div class="file-list" v-if="fileList.length > 0">
+                        <div style="margin-top: 10px;">
+                            <el-button type="primary" @click="submitUpload">开始上传</el-button>
+                            <el-button type="danger" @click="clearFiles">清空文件</el-button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-container" v-if="uploadedFiles.length > 0">
+                    <div class="preview-item" v-for="(file, index) in uploadedFiles" :key="index">
+                        <template v-if="isImage(file.name)">
+                            <img :src="file.url" class="preview-image" :alt="file.name">
+                        </template>
+                        <template v-else>
+                            <div class="preview-file">
+                                仅支持图片文件预览
+                            </div>
+                        </template>
+                        <div class="format-container">
+                            <div class="format-item"  v-if="isImage(file.name)">
+                                <strong>Markdown：</strong>
+                                <el-input
+                                    :value="`![${file.name}](${file.url})`"
+                                    readonly
+                                    @click="copyToClipboard(`![${file.name}](${file.url})`)"
+                                    class="copyable-input"
+                                />
+                            </div>
+                            <div class="format-item"  v-if="isImage(file.name)">
+                                <strong>HTML：</strong>
+                                <el-input
+                                    :value="`<a href='${file.url}' alt='${file.name}'>${file.name}</a>`"
+                                    readonly
+                                    @click="copyToClipboard(`<a href='${file.url}' alt='${file.name}'>${file.name}</a>`)"
+                                    class="copyable-input"
+                                />
+                            </div>
+                            <div class="format-item"  v-if="isImage(file.name)">
+                                <strong>BBS：</strong>
+                                <el-input
+                                    :value="`[img]${file.url}[/img]`"
+                                    readonly
+                                    @click="copyToClipboard(`[img]${file.url}[/img]`)"
+                                    class="copyable-input"
+                                />
+                            </div>
+                            <div class="format-item">
+                                <strong>URL：</strong>
+                                <el-input
+                                    :value="file.url"
+                                    readonly
+                                    @click="copyToClipboard(file.url)"
+                                    class="copyable-input"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="preview-container" v-if="uploadedFiles.length > 0">
-                <div class="preview-item" v-for="(file, index) in uploadedFiles" :key="index">
-                    <template v-if="isImage(file.name)">
-                        <img :src="file.url" class="preview-image" :alt="file.name">
-                    </template>
-                    <template v-else>
-                        <div class="preview-file">
-                            仅支持图片文件预览
-                        </div>
-                    </template>
-                    <div class="format-container">
-                        <div class="format-item"  v-if="isImage(file.name)">
-                            <strong>Markdown：</strong>
-                            <el-input
-                                :value="`![${file.name}](${file.url})`"
-                                readonly
-                                @click="copyToClipboard(`![${file.name}](${file.url})`)"
-                                class="copyable-input"
-                            />
-                        </div>
-                        <div class="format-item"  v-if="isImage(file.name)">
-                            <strong>HTML：</strong>
-                            <el-input
-                                :value="`<a href='${file.url}' alt='${file.name}'>${file.name}</a>`"
-                                readonly
-                                @click="copyToClipboard(`<a href='${file.url}' alt='${file.name}'>${file.name}</a>`)"
-                                class="copyable-input"
-                            />
-                        </div>
-                        <div class="format-item"  v-if="isImage(file.name)">
-                            <strong>BBS：</strong>
-                            <el-input
-                                :value="`[img]${file.url}[/img]`"
-                                readonly
-                                @click="copyToClipboard(`[img]${file.url}[/img]`)"
-                                class="copyable-input"
-                            />
-                        </div>
-                        <div class="format-item">
-                            <strong>URL：</strong>
-                            <el-input
-                                :value="file.url"
-                                readonly
-                                @click="copyToClipboard(file.url)"
-                                class="copyable-input"
-                            />
-                        </div>
-                    </div>
+            <div class="content-section" :class="{ active: currentView === 'api' }">
+                <div class="api-content">
+                    <h3>API 文档</h3>
+                    <p>上传文件 API 接口说明：</p>
+                    <pre>
+POST /api/upload
+Content-Type: multipart/form-data
+
+参数：
+- file: 文件（支持多文件上传）
+
+响应：
+{
+    "code": 200,
+    "message": "上传成功",
+    "files": [
+        {
+            "name": "文件名",
+            "url": "文件访问地址"
+        }
+    ]
+}
+
+状态码：
+- 200: 全部文件上传成功
+- 207: 部分文件上传成功
+- 400: 请求参数错误
+- 413: 文件大小超出限制
+- 415: 不支持的文件类型
+- 500: 服务器内部错误</pre>
+                </div>
+            </div>
+
+            <div class="content-section" :class="{ active: currentView === 'about' }">
+                <div class="about-content">
+                    <h3>关于 ToAlist</h3>
+                    <p>ToAlist 是一个简单易用的文件上传服务，支持图片预览和多种格式的链接生成。</p>
+                    <p>主要功能：</p>
+                    <ul>
+                        <li>支持拖拽上传和点击上传</li>
+                        <li>支持图片文件预览</li>
+                        <li>自动生成 Markdown、HTML、BBS 等多种格式的链接</li>
+                        <li>支持暗色模式</li>
+                        <li>支持多文件同时上传</li>
+                    </ul>
+                    <p>技术栈：</p>
+                    <ul>
+                        <li>前端：Vue 3 + Element Plus</li>
+                        <li>后端：Go</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -359,6 +486,7 @@
 
         const app = createApp({
             setup() {
+                const currentView = ref('upload')
                 const uploadRef = ref(null)
                 const fileList = ref([])
                 const uploadedFiles = ref([])
@@ -458,7 +586,12 @@
                     }
                 }
 
+                const switchView = (view) => {
+                    currentView.value = view
+                }
+
                 return {
+                    currentView,
                     uploadRef,
                     fileList,
                     uploadedFiles,
@@ -473,7 +606,8 @@
                     handleFileRemove,
                     clearFiles,
                     submitUpload,
-                    copyToClipboard
+                    copyToClipboard,
+                    switchView
                 }
             }
         })
