@@ -32,9 +32,10 @@ type AlistConfig struct {
 }
 
 type UploadConfig struct {
-	Method      string `ini:"upload_method"`
-	AllowTypes  string `ini:"allow_types"`
-	MaxFileSize int    `ini:"max_file_size"`
+	Method           string `ini:"upload_method"`
+	AllowTypes       string `ini:"allow_types"`
+	MaxFileSize      int    `ini:"max_file_size"`
+	KeepOriginalName bool   `ini:"keep_original_name"`
 }
 
 type PageConfig struct {
@@ -51,9 +52,10 @@ var defaultConfig = ConfigType{
 		Port: "5245",
 	},
 	Upload: UploadConfig{
-		Method:      "form",
-		AllowTypes:  "jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,7z",
-		MaxFileSize: 50, // 默认50MB
+		Method:           "form",
+		AllowTypes:       "jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,7z",
+		MaxFileSize:      50,   // 默认50MB
+		KeepOriginalName: true, // 默认保留原始文件名
 	},
 	Page: PageConfig{
 		CustomEnable: false,
