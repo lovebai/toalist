@@ -431,6 +431,7 @@ Content-Type: multipart/form-data
 
 参数：
 - file: 文件（支持多文件上传）
+- sign: 时间戳（随机字符也可）
 
 响应：
 {
@@ -535,6 +536,7 @@ Content-Type: multipart/form-data
                 const submitUpload = async () => {
                     const formData = new FormData()
                     fileList.value.forEach(file => {
+						formData.append('sign', Date.now());
                         formData.append('file', file.raw)
                     })
 

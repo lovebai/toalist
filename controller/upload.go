@@ -19,6 +19,16 @@ var config = conf.GlobalConfig
 
 // 处理前端上传，转发到文件服务器
 func UploadForm(c *gin.Context) {
+	// 验证 sign 参数
+	sign := c.PostForm("sign")
+	if sign == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "缺少必要的 sign 参数",
+		})
+		return
+	}
+
 	form, err := c.MultipartForm()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
