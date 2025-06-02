@@ -86,5 +86,12 @@ func RefreshToken() {
 }
 
 func GetToken() string {
+	if time.Now().After(tokenExpireTime) {
+		t, err := loginAndGetToken()
+		if err == nil {
+			token = t
+			tokenExpireTime = time.Now().Add(time.Hour * 48)
+		}
+	}
 	return token
 }
