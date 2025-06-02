@@ -127,7 +127,7 @@ func UploadForm(c *gin.Context) {
 				url, _ = utils.GetFsLink(filepath)
 			}
 
-		default:
+		case "local":
 			// 存储到本地
 			now := time.Now()
 			year := fmt.Sprintf("%d", now.Year())
@@ -153,6 +153,13 @@ func UploadForm(c *gin.Context) {
 
 			// 构建访问URL
 			url = config.Base.SiteUrl + "/" + filepath.ToSlash(fullPath)
+		default:
+			// 未开启上传功能
+			c.JSON(http.StatusForbidden, gin.H{
+				"code":    403,
+				"message": "管理员未开启上传功能",
+			})
+			return
 		}
 
 		if url != "" {
