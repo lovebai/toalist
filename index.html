@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToAlist</title>
+    <!-- 引入 Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- 引入 Element Plus -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <script src="https://unpkg.com/element-plus"></script>
+    <!-- 引入 Element Plus 图标 -->
+    <script src="https://unpkg.com/@element-plus/icons-vue"></script>
+    <style>
+        :root {
+            --el-bg-color: #ffffff;
+            --el-text-color-primary: #303133;
+        }
+
+        [data-theme="dark"] {
+            --el-bg-color: #1a1a1a;
+            --el-text-color-primary: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: var(--el-bg-color);
+            color: var(--el-text-color-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: var(--el-bg-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .upload-container {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: var(--el-bg-color);
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .file-list {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: var(--el-bg-color);
+            border: 1px solid var(--el-border-color);
+        }
+
+        .preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: var(--el-bg-color);
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .preview-file {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 200px;
+            background-color: var(--el-fill-color-light);
+            border-radius: 4px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 1px solid var(--el-border-color);
+        }
+
+        .copy-button {
+            margin-left: 10px;
+        }
+
+        .format-container {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: var(--el-fill-color-light);
+            border-radius: 4px;
+        }
+
+        .format-item {
+            margin: 5px 0;
+            word-break: break-all;
+        }
+
+        /* 添加暗黑模式下的上传区域样式 */
+        [data-theme="dark"] .el-upload-dragger {
+            background-color: var(--el-bg-color);
+            border-color: var(--el-border-color);
+            color: var(--el-text-color-primary);
+        }
+
+        [data-theme="dark"] .el-upload-dragger:hover {
+            border-color: var(--el-color-primary);
+        }
+
+        [data-theme="dark"] .el-upload__text {
+            color: var(--el-text-color-primary);
+        }
+
+        [data-theme="dark"] .el-upload__text em {
+            color: var(--el-color-primary);
+        }
+
+        [data-theme="dark"] .el-icon--upload {
+            color: var(--el-text-color-primary);
+        }
+
+        /* 添加上传图标样式 */
+        .upload-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            color: var(--el-text-color-primary);
+        }
+
+        [data-theme="dark"] .upload-icon {
+            color: var(--el-text-color-primary);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <h2>ToAlist</h2>
+            <el-switch
+                v-model="isDark"
+                inline-prompt
+                :active-icon="Moon"
+                :inactive-icon="Sunny"
+                @change="toggleTheme"
+            />
+        </div>
+
+        <div class="container">
+            <div class="upload-container">
+                <el-upload
+                    ref="uploadRef"
+                    class="upload-area"
+                    drag
+                    multiple
+                    :auto-upload="false"
+                    :on-change="handleFileChange"
+                    :on-remove="handleFileRemove"
+                    :file-list="fileList"
+                >
+                    <svg class="upload-icon" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22V13M12 13L15.5 16.5M12 13L8.5 16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M20 17.6073C21.4937 17.0221 23 15.6889 23 13C23 9 19.6667 8 18 8C18 6 18 2 12 2C6 2 6 6 6 8C4.33333 8 1 9 1 13C1 15.6889 2.50628 17.0221 4 17.6073" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <div class="el-upload__text">
+                        将文件拖到此处，或<em>点击上传</em>
+                    </div>
+                </el-upload>
+
+                <div class="file-list" v-if="fileList.length > 0">
+                    <div class="file-item" v-for="(file, index) in fileList" :key="index">
+                        <el-progress
+                            v-if="file.status === 'uploading'"
+                            :percentage="file.percentage"
+                            :status="file.status === 'success' ? 'success' : ''"
+                        />
+                        <span v-else>{{ file.name }}</span>
+                        <el-button
+                            type="danger"
+                            size="small"
+                            @click="handleFileRemove(file)"
+                            style="margin-left: auto;"
+                        >
+                            移除
+                        </el-button>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <el-button type="primary" @click="submitUpload">开始上传</el-button>
+                        <el-button type="danger" @click="clearFiles">清空文件</el-button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-container" v-if="uploadedFiles.length > 0">
+                <div class="preview-item" v-for="(file, index) in uploadedFiles" :key="index">
+                    <template v-if="isImage(file.name)">
+                        <img :src="file.url" class="preview-image" :alt="file.name">
+                    </template>
+                    <template v-else>
+                        <div class="preview-file">
+                            <el-icon :size="48"><document /></el-icon>
+                        </div>
+                    </template>
+                    <div class="format-container">
+                        <div class="format-item">
+                            <strong>Markdown格式：</strong>
+                            <el-button
+                                type="primary"
+                                size="small"
+                                class="copy-button"
+                                @click="copyToClipboard(`![${file.name}](${file.url})`)"
+                            >
+                                复制
+                            </el-button>
+                            <div>![{{ file.name }}]({{ file.url }})</div>
+                        </div>
+                        <div class="format-item">
+                            <strong>HTML格式：</strong>
+                            <el-button
+                                type="primary"
+                                size="small"
+                                class="copy-button"
+                                @click="copyToClipboard(`<a href='${file.url}' alt='${file.name}'>${file.name}</a>`)"
+                            >
+                                复制
+                            </el-button>
+                            <div>&lt;a href='{{ file.url }}' alt='{{ file.name }}'&gt;{{ file.name }}&lt;/a&gt;</div>
+                        </div>
+                        <div class="format-item">
+                            <strong>BBS格式：</strong>
+                            <el-button
+                                type="primary"
+                                size="small"
+                                class="copy-button"
+                                @click="copyToClipboard(`[img]${file.url}[/img]`)"
+                            >
+                                复制
+                            </el-button>
+                            <div>[img]{{ file.url }}[/img]</div>
+                        </div>
+                        <div class="format-item">
+                            <strong>URL：</strong>
+                            <el-button
+                                type="primary"
+                                size="small"
+                                class="copy-button"
+                                @click="copyToClipboard(file.url)"
+                            >
+                                复制
+                            </el-button>
+                            <div>{{ file.url }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Copyright © 2025 - All right reserved by ToAlist .</p>
+        </footer>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue
+        const { ElMessage } = ElementPlus
+
+        const app = createApp({
+            setup() {
+                const uploadRef = ref(null)
+                const fileList = ref([])
+                const uploadedFiles = ref([])
+                // 从 localStorage 中读取主题设置，如果没有则默认为 false
+                const isDark = ref(localStorage.getItem('theme') === 'dark')
+
+                // 在组件挂载时应用保存的主题
+                const applyTheme = () => {
+                    document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
+                }
+
+                // 页面加载时应用保存的主题
+                applyTheme()
+
+                const Moon = ElementPlusIconsVue.Moon
+                const Sunny = ElementPlusIconsVue.Sunny
+                const UploadFilled = ElementPlusIconsVue.UploadFilled
+                const Document = ElementPlusIconsVue.Document
+
+                const toggleTheme = (val) => {
+                    isDark.value = val
+                    // 保存主题设置到 localStorage
+                    localStorage.setItem('theme', val ? 'dark' : 'light')
+                    applyTheme()
+                }
+
+                const isImage = (filename) => {
+                    return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename)
+                }
+
+                const handleFileChange = (file) => {
+                    fileList.value = [...fileList.value, file]
+                }
+
+                const handleFileRemove = (file) => {
+                    const index = fileList.value.indexOf(file)
+                    if (index !== -1) {
+                        fileList.value.splice(index, 1)
+                    }
+                }
+
+                const clearFiles = () => {
+                    fileList.value = []
+                    uploadRef.value.clearFiles()
+                }
+
+                const submitUpload = async () => {
+                    const formData = new FormData()
+                    fileList.value.forEach(file => {
+                        formData.append('files', file.raw)
+                    })
+
+                    try {
+                        const response = await fetch('/api/upload/form', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        const result = await response.json()
+                        
+                        if (result.code === 200) {
+                            uploadedFiles.value.push({
+                                name: result.name,
+                                url: result.url
+                            })
+                            ElMessage.success('上传成功')
+                            clearFiles()
+                        } else {
+                            ElMessage.error(result.message || '上传失败')
+                        }
+                    } catch (error) {
+                        ElMessage.error('上传过程中发生错误')
+                        console.error(error)
+                    }
+                }
+
+                const copyToClipboard = async (text) => {
+                    try {
+                        await navigator.clipboard.writeText(text)
+                        ElMessage.success('复制成功')
+                    } catch (err) {
+                        ElMessage.error('复制失败')
+                        console.error('复制失败:', err)
+                    }
+                }
+
+                return {
+                    uploadRef,
+                    fileList,
+                    uploadedFiles,
+                    isDark,
+                    Moon,
+                    Sunny,
+                    UploadFilled,
+                    Document,
+                    toggleTheme,
+                    isImage,
+                    handleFileChange,
+                    handleFileRemove,
+                    clearFiles,
+                    submitUpload,
+                    copyToClipboard
+                }
+            }
+        })
+
+        app.use(ElementPlus)
+        app.mount('#app')
+    </script>
+</body>
+</html> 
