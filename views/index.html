@@ -129,6 +129,8 @@
             height: 200px;
             background-color: var(--el-fill-color-light);
             border-radius: 4px;
+            color: var(--el-text-color-secondary);
+            font-size: 14px;
         }
 
         .footer {
@@ -144,14 +146,59 @@
 
         .format-container {
             margin-top: 10px;
-            padding: 10px;
+            padding: 15px;
             background-color: var(--el-bg-color);
-            border-radius: 4px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
         }
 
         .format-item {
-            margin: 5px 0;
+            margin: 12px 0;
             word-break: break-all;
+            transition: all 0.3s ease;
+        }
+
+        .format-item strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--el-text-color-primary);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .format-item .el-input {
+            transition: all 0.3s ease;
+        }
+
+        .format-item .el-input:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .format-item .el-input__wrapper {
+            padding: 8px 12px;
+            border-radius: 6px;
+            background-color: var(--el-fill-color-blank);
+            border: 1px solid var(--el-border-color-light);
+        }
+
+        .format-item .el-input__wrapper:hover {
+            border-color: var(--el-color-primary);
+        }
+
+        [data-theme="dark"] .format-container {
+            background-color: var(--el-bg-color-perview);
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        [data-theme="dark"] .format-item .el-input__wrapper {
+            background-color: var(--el-bg-color);
+            border-color: var(--el-border-color-darker);
+        }
+
+        [data-theme="dark"] .format-item .el-input__wrapper:hover {
+            border-color: var(--el-color-primary);
+            background-color: var(--el-bg-color-overlay);
         }
 
         /* 添加暗黑模式下的上传区域样式 */
@@ -256,11 +303,11 @@
                     </template>
                     <template v-else>
                         <div class="preview-file">
-                            <el-icon :size="48"><document /></el-icon>
+                            仅支持图片文件预览
                         </div>
                     </template>
                     <div class="format-container">
-                        <div class="format-item">
+                        <div class="format-item"  v-if="isImage(file.name)">
                             <strong>Markdown：</strong>
                             <el-input
                                 :value="`![${file.name}](${file.url})`"
@@ -269,7 +316,7 @@
                                 class="copyable-input"
                             />
                         </div>
-                        <div class="format-item">
+                        <div class="format-item"  v-if="isImage(file.name)">
                             <strong>HTML：</strong>
                             <el-input
                                 :value="`<a href='${file.url}' alt='${file.name}'>${file.name}</a>`"
@@ -278,7 +325,7 @@
                                 class="copyable-input"
                             />
                         </div>
-                        <div class="format-item">
+                        <div class="format-item"  v-if="isImage(file.name)">
                             <strong>BBS：</strong>
                             <el-input
                                 :value="`[img]${file.url}[/img]`"
@@ -329,7 +376,6 @@
                 const Moon = ElementPlusIconsVue.Moon
                 const Sunny = ElementPlusIconsVue.Sunny
                 const UploadFilled = ElementPlusIconsVue.UploadFilled
-                const Document = ElementPlusIconsVue.Document
 
                 const toggleTheme = (val) => {
                     isDark.value = val
