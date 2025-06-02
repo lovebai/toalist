@@ -14,6 +14,7 @@ type ConfigType struct {
 	Alist  AlistConfig  `ini:"alist"`
 	Upload UploadConfig `ini:"upload"`
 	Page   PageConfig   `ini:"page"`
+	Login  LoginConfig  `ini:"login"`
 }
 
 type BaseConfig struct {
@@ -35,6 +36,7 @@ type UploadConfig struct {
 	AllowTypes       string `ini:"allow_types"`
 	MaxFileSize      int    `ini:"max_file_size"`
 	KeepOriginalName bool   `ini:"keep_original_name"`
+	LocalUploadPath  string `ini:"local_upload_path"`
 }
 
 type PageConfig struct {
@@ -42,6 +44,12 @@ type PageConfig struct {
 	Title   string `ini:"site_title"`
 	Desc    string `ini:"site_desc"`
 	Icon    string `ini:"site_icon"`
+}
+
+type LoginConfig struct {
+	Username  string `ini:"username"`
+	Password  string `ini:"password"`
+	AdminPage string `ini:"admin_page"`
 }
 
 // 默认配置

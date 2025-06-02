@@ -26,3 +26,15 @@ func Index(c *gin.Context) {
 	}
 	c.HTML(http.StatusOK, "index", data)
 }
+
+// 登录页面
+func LoginPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "login.html", nil)
+}
+
+// 文件管理页面
+func FileManagerPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "file-manager.html", gin.H{
+		"upload_path": config.Upload.LocalUploadPath + "/",
+	})
+}

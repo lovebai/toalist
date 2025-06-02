@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -153,7 +154,7 @@ func UploadForm(c *gin.Context) {
 			month := fmt.Sprintf("%02d", now.Month())
 
 			// 构建存储路径：i/年/月/文件名
-			storePath := filepath.Join("i", year, month)
+			storePath := filepath.Join(strings.ReplaceAll(config.Upload.LocalUploadPath, "/", ""), year, month)
 
 			// 确保目录存在
 			if err := os.MkdirAll(storePath, 0755); err != nil {
