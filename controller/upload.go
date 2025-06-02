@@ -2,9 +2,13 @@ package controller
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lovebai/toalist/conf"
@@ -59,11 +63,11 @@ func UploadForm(c *gin.Context) {
 		}
 
 		var resp *http.Response
-		filepath := config.Alist.Path + "/" + file.Filename
+		var url string
 
-		// 根据配置选择上传方式
-		if config.Upload.Method == "stream" {
-			// 流式上传
+		switch config.Upload.Method {
+		case "stream":
+			// 流式上传到文件服务器
 			uploadURL := config.Alist.APIURL + "/api/fs/put"
 			req, err := http.NewRequest("PUT", uploadURL, bytes.NewReader(fileContent))
 			if err != nil {
@@ -71,14 +75,19 @@ func UploadForm(c *gin.Context) {
 				continue
 			}
 
+			filepath := config.Alist.Path + "/" + file.Filename
 			req.Header.Set("Content-Type", "application/octet-stream")
 			req.Header.Set("File-Path", filepath)
 			req.Header.Set("Authorization", utils.GetToken())
 
 			client := &http.Client{}
 			resp, _ = client.Do(req)
-		} else {
-			// 表单上传（默认方式）
+			if resp != nil {
+				url, _ = utils.GetFsLink(filepath)
+			}
+
+		case "form":
+			// 表单上传到文件服务器
 			body := &bytes.Buffer{}
 			writer := multipart.NewWriter(body)
 
@@ -100,6 +109,7 @@ func UploadForm(c *gin.Context) {
 				continue
 			}
 
+			filepath := config.Alist.Path + "/" + file.Filename
 			uploadURL := config.Alist.APIURL + "/api/fs/form"
 			req, err := http.NewRequest("PUT", uploadURL, body)
 			if err != nil {
@@ -113,31 +123,50 @@ func UploadForm(c *gin.Context) {
 
 			client := &http.Client{}
 			resp, _ = client.Do(req)
+			if resp != nil {
+				url, _ = utils.GetFsLink(filepath)
+			}
+
+		default:
+			// 存储到本地
+			now := time.Now()
+			year := fmt.Sprintf("%d", now.Year())
+			month := fmt.Sprintf("%02d", now.Month())
+
+			// 构建存储路径：i/年/月/文件名
+			storePath := filepath.Join("i", year, month)
+
+			// 确保目录存在
+			if err := os.MkdirAll(storePath, 0755); err != nil {
+				errors = append(errors, file.Filename+": 创建存储目录失败 - "+err.Error())
+				continue
+			}
+
+			// 构建完整的文件路径
+			fullPath := filepath.Join(storePath, file.Filename)
+
+			// 写入文件
+			if err := os.WriteFile(fullPath, fileContent, 0644); err != nil {
+				errors = append(errors, file.Filename+": 写入文件失败 - "+err.Error())
+				continue
+			}
+
+			// 构建访问URL
+			url = config.Base.SiteUrl + "/" + filepath.ToSlash(fullPath)
 		}
 
-		if err != nil {
-			errors = append(errors, file.Filename+": "+err.Error())
-			continue
+		if url != "" {
+			results = append(results, FileResult{
+				URL:  url,
+				Name: file.Filename,
+			})
+		} else {
+			errors = append(errors, file.Filename+": 上传失败")
 		}
 
-		// 读取响应
-		_, err = io.ReadAll(resp.Body)
-		resp.Body.Close()
-		if err != nil {
-			errors = append(errors, file.Filename+": "+err.Error())
-			continue
+		if resp != nil {
+			resp.Body.Close()
 		}
-
-		url, err := utils.GetFsLink(filepath)
-		if err != nil {
-			errors = append(errors, file.Filename+": "+err.Error())
-			continue
-		}
-
-		results = append(results, FileResult{
-			URL:  url,
-			Name: file.Filename,
-		})
 	}
 
 	// 构建响应
