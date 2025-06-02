@@ -6,11 +6,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Data struct {
+	Title string
+	Desc  string
+	Icon  string
+}
+
 // 首页
 func Index(c *gin.Context) {
-	c.HTML(http.StatusOK, "index", gin.H{
-		"title":           "Toalist",
-		"formUploadUrl":   "/api/upload/form",
-		"streamUploadUrl": "/api/upload/stream",
-	})
+	data := Data{
+		Title: config.Page.Title,
+		Desc:  config.Page.Desc,
+		Icon: func() string {
+			if len(config.Page.Icon) == 0 {
+				return "https://i.obai.cc/i/favicon.png"
+			}
+			return config.Page.Icon
+		}(),
+	}
+	c.HTML(http.StatusOK, "index", data)
 }

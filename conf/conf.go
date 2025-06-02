@@ -38,10 +38,10 @@ type UploadConfig struct {
 }
 
 type PageConfig struct {
-	SiteUrl      string `ini:"site_url"`
-	CustomEnable bool   `ini:"custom_enable"`
-	CustomCSS    string `ini:"custom_css"`
-	CustomJS     string `ini:"custom_js"`
+	SiteUrl string `ini:"site_url"`
+	Title   string `ini:"site_title"`
+	Desc    string `ini:"site_desc"`
+	Icon    string `ini:"site_icon"`
 }
 
 // 默认配置
@@ -54,11 +54,8 @@ var defaultConfig = ConfigType{
 	Upload: UploadConfig{
 		Method:           "form",
 		AllowTypes:       "jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,7z",
-		MaxFileSize:      50,   // 默认50MB
-		KeepOriginalName: true, // 默认保留原始文件名
-	},
-	Page: PageConfig{
-		CustomEnable: false,
+		MaxFileSize:      50, // 默认50MB
+		KeepOriginalName: true,
 	},
 }
 
