@@ -17,10 +17,9 @@ type ConfigType struct {
 }
 
 type BaseConfig struct {
-	Mode    string `ini:"mode"`
-	Host    string `ini:"host"`
-	Port    string `ini:"port"`
-	SiteUrl string `ini:"site_url"`
+	Mode string `ini:"mode"`
+	Host string `ini:"host"`
+	Port string `ini:"port"`
 }
 
 type AlistConfig struct {
@@ -39,6 +38,7 @@ type UploadConfig struct {
 }
 
 type PageConfig struct {
+	SiteUrl      string `ini:"site_url"`
 	CustomEnable bool   `ini:"custom_enable"`
 	CustomCSS    string `ini:"custom_css"`
 	CustomJS     string `ini:"custom_js"`

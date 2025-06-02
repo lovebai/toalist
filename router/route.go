@@ -33,14 +33,17 @@ func Middleware() gin.HandlerFunc {
 
 // 初始化路由
 func InitRouter() {
+	gin.SetMode(conf.GlobalConfig.Base.Mode)
 	router := gin.Default()
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.Delims("[[", "]]")
 	router.LoadHTMLGlob("views/**")
 	router.Static("/i", "./i")
-	router.Use(Middleware())
+	// router.Use(Middleware())
 	router.NoRoute(NullPage)
 	IndexPage(router)
 
-	router.Run(":" + conf.GlobalConfig.Base.Port)
+	server := conf.GlobalConfig.Base.Host + ":" + conf.GlobalConfig.Base.Port
+	slog.Info("ToAlist 服务已启动， 地址：" + server)
+	router.Run(server)
 }
