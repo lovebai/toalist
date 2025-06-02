@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +18,38 @@ import (
 )
 
 var config = conf.GlobalConfig
+
+// 验证文件类型和大小
+func validateFile(file *multipart.FileHeader) error {
+	slog.Info("====file size", "size", file.Size)
+	// 获取文件扩展名
+	ext := strings.ToLower(strings.TrimPrefix(filepath.Ext(file.Filename), "."))
+
+	// 验证文件类型
+	allowTypes := strings.Split(config.Upload.AllowTypes, ",")
+	validType := false
+	for _, t := range allowTypes {
+		if strings.TrimSpace(t) == ext {
+			validType = true
+			break
+		}
+	}
+	if !validType {
+		return fmt.Errorf("不支持的文件类型：%s，允许的类型：%s", ext, config.Upload.AllowTypes)
+	}
+
+	// 验证文件大小
+	fileSizeMB := float64(file.Size) / 1024.0 / 1024.0
+	maxSizeMB := float64(config.Upload.MaxFileSize)
+
+	if fileSizeMB > maxSizeMB {
+		return fmt.Errorf("文件大小超过限制：%.2fMB，最大允许：%dMB",
+			fileSizeMB,
+			config.Upload.MaxFileSize)
+	}
+
+	return nil
+}
 
 // 处理前端上传，转发到文件服务器
 func UploadForm(c *gin.Context) {
@@ -47,6 +81,12 @@ func UploadForm(c *gin.Context) {
 	var errors []string
 
 	for _, file := range files {
+		// 验证文件类型和大小
+		if err := validateFile(file); err != nil {
+			errors = append(errors, file.Filename+": "+err.Error())
+			continue
+		}
+
 		// 打开文件
 		src, err := file.Open()
 		if err != nil {
