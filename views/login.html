@@ -64,7 +64,7 @@
                 const data = await response.json();
                 if (response.ok) {
                     localStorage.setItem('token', data.token);
-                    window.location.href = './file-manager';
+                    window.location.href = './';
                 } else {
                     alert(data.error || '登录失败');
                 }

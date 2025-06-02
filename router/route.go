@@ -15,8 +15,8 @@ func FileManagerRoutes(r *gin.Engine) {
 	{
 		// 页面路由
 		managerPage.GET("/login", controller.LoginPage)
-		managerPage.GET("/file-manager", controller.FileManagerPage)
 		managerPage.POST("/login", controller.Login)
+		managerPage.GET("/", controller.FileManagerPage)
 	}
 
 	// 文件管理API路由组
@@ -65,6 +65,6 @@ func InitRouter() {
 	IndexPage(router)
 
 	server := conf.GlobalConfig.Base.Host + ":" + conf.GlobalConfig.Base.Port
-	slog.Info("ToAlist 服务已启动在：" + server)
+	slog.Info("ToAlist 服务已启动在：http://" + server)
 	router.Run(server)
 }

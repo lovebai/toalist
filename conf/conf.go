@@ -1,12 +1,5 @@
 package conf
 
-import (
-	"log/slog"
-	"os"
-
-	"gopkg.in/ini.v1"
-)
-
 var GlobalConfig = &ConfigType{}
 
 type ConfigType struct {
@@ -50,37 +43,4 @@ type LoginConfig struct {
 	Username  string `ini:"username"`
 	Password  string `ini:"password"`
 	AdminPage string `ini:"admin_page"`
-}
-
-// 默认配置
-var defaultConfig = ConfigType{
-	Base: BaseConfig{
-		Mode: "development",
-		Host: "127.0.0.1",
-		Port: "5245",
-	},
-	Upload: UploadConfig{
-		Method:           "form",
-		AllowTypes:       "jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,7z",
-		MaxFileSize:      50, // 默认50MB
-		KeepOriginalName: true,
-	},
-}
-
-func InitConfig() {
-	cfg, err := ini.Load("conf.ini")
-	if err != nil {
-		slog.Error("Failed to read configuration file: %v", err)
-		os.Exit(1)
-	}
-
-	// 设置默认值
-	*GlobalConfig = defaultConfig
-
-	// 映射配置到结构体
-	if err := cfg.MapTo(GlobalConfig); err != nil {
-		slog.Error("Failed to map configuration: %v", err)
-		os.Exit(1)
-	}
-
 }
