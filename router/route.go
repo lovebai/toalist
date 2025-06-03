@@ -38,6 +38,16 @@ func IndexPage(router *gin.Engine) {
 	router.POST("/api/upload", controller.UploadForm)
 }
 
+// 代理路由
+func ProxyRoutes(r *gin.Engine) {
+	// 创建代理路由组
+	proxyGroup := r.Group("/dw")
+	{
+		proxyGroup.Any("/*path", controller.Proxy)
+	}
+	slog.Info("Alist代理已启用，代理地址为：/dw")
+}
+
 // 初始化路由和模板
 func InitRouter(views embed.FS) {
 	gin.SetMode(conf.GlobalConfig.Base.Mode)
@@ -59,6 +69,12 @@ func InitRouter(views embed.FS) {
 		controller.InitManager()
 		FileManagerRoutes(router)
 		slog.Info("已选择本地(local)模式，上传文件路径为：" + conf.GlobalConfig.Upload.LocalUploadPath)
+	}
+
+	// 根据配置是否启用代理
+	if conf.GlobalConfig.Alist.IsProxy {
+		ProxyRoutes(router)
+		slog.Info("已启用对Alist的代理，代理地址为：/dw")
 	}
 
 	router.NoRoute(controller.NullPage)

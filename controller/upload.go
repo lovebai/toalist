@@ -183,6 +183,10 @@ func UploadForm(c *gin.Context) {
 		}
 
 		if url != "" {
+			if config.Alist.IsProxy {
+				url = strings.ReplaceAll(url, config.Alist.URL, config.Base.Url+"/dw")
+			}
+
 			results = append(results, FileResult{
 				URL:  url,
 				Name: processedFileName,

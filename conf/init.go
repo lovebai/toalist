@@ -41,6 +41,7 @@ alist_api_url =
 alist_username = 
 alist_password = 
 alist_path = 
+isproxy = false
 
 [upload]
 upload_method = local 

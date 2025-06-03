@@ -22,6 +22,7 @@ type AlistConfig struct {
 	Username string `ini:"alist_username"`
 	Password string `ini:"alist_password"`
 	Path     string `ini:"alist_path"`
+	IsProxy  bool   `ini:"isproxy"`
 }
 
 type UploadConfig struct {
