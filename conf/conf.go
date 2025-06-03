@@ -26,11 +26,12 @@ type AlistConfig struct {
 }
 
 type UploadConfig struct {
-	Method           string `ini:"upload_method"`
-	AllowTypes       string `ini:"allow_types"`
-	MaxFileSize      int    `ini:"max_file_size"`
-	KeepOriginalName bool   `ini:"keep_original_name"`
-	LocalUploadPath  string `ini:"local_upload_path"`
+	Method            string `ini:"upload_method"`
+	AllowTypes        string `ini:"allow_types"`
+	MaxFileSize       int    `ini:"max_file_size"`
+	KeepOriginalName  bool   `ini:"keep_original_name"`
+	LocalUploadPath   string `ini:"local_upload_path"`
+	IsLocalImgEncrypt bool   `ini:"is_local_img_encrypt"`
 }
 
 type LoginConfig struct {

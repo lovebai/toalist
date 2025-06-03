@@ -57,22 +57,16 @@ func ProcessFileName(originalName string) string {
 	return fmt.Sprintf("%s_%s%s", nameWithoutExt, timestamp, ext)
 }
 
-// https://gin-gonic.com/zh-cn/docs/examples/bind-single-binary-with-template/
-// loadTemplate 加载由 go-assets-builder 嵌入的模板
-// func loadTemplate() (*template.Template, error) {
-// 	t := template.New("")
-// 	for name, file := range Assets.Files {
-// 		if file.IsDir() || !strings.HasSuffix(name, ".html") {
-// 			continue
-// 		}
-// 		h, err := io.ReadAll(file)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		t, err = t.New(name).Parse(string(h))
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 	}
-// 	return t, nil
-// }
+// IsImageFile 检查文件是否为图片类型
+func IsImageFile(filePath string) bool {
+	ext := strings.ToLower(strings.TrimPrefix(filepath.Ext(filePath), "."))
+	imageExts := []string{"jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "ico"}
+
+	for _, imgExt := range imageExts {
+		if ext == imgExt {
+			return true
+		}
+	}
+
+	return false
+}

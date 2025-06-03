@@ -49,6 +49,7 @@ allow_types = jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,7z
 max_file_size = 50 
 keep_original_name = true
 local_upload_path = /i
+is_local_img_encrypt = false
 
 [login]
 username = admin

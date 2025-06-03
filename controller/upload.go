@@ -171,8 +171,18 @@ func UploadForm(c *gin.Context) {
 				continue
 			}
 
+			newFilePath := filepath.ToSlash(fullPath)
+
+			// 加密一下图片文件
+			if config.Upload.IsLocalImgEncrypt && utils.IsImageFile(newFilePath) {
+				en, _ := utils.AESEncrypt(newFilePath)
+				url = config.Base.Url + "/hide/" + en
+			} else {
+				url = config.Base.Url + "/" + newFilePath
+			}
+
 			// 构建访问URL
-			url = config.Base.Url + "/" + filepath.ToSlash(fullPath)
+			// url = config.Base.Url + newFilePath
 		default:
 			// 未开启上传功能
 			c.JSON(http.StatusForbidden, gin.H{

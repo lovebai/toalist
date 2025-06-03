@@ -36,6 +36,7 @@ func IndexPage(router *gin.Engine) {
 	router.GET("/", controller.Index)
 	router.GET(conf.GlobalConfig.Upload.LocalUploadPath, controller.NullPage)
 	router.POST("/api/upload", controller.UploadForm)
+	router.GET("/hide/*hide", controller.HideImage)
 }
 
 // 代理路由
