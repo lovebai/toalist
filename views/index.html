@@ -375,9 +375,17 @@
                         <template v-if="isImage(file.name)">
                             <img :src="file.url" class="preview-image" :alt="file.name">
                         </template>
+                        <template v-else-if="isVideo(file.name)">
+                            <video 
+                                :src="file.url" 
+                                class="preview-image" 
+                                controls 
+                                preload="metadata"
+                            ></video>
+                        </template>
                         <template v-else>
                             <div class="preview-file">
-                                仅支持图片文件预览
+                                仅支持图片和MP4文件预览
                             </div>
                         </template>
                         <div class="format-container">
@@ -518,6 +526,10 @@ Content-Type: multipart/form-data
                     return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename)
                 }
 
+                const isVideo = (filename) => {
+                    return /\.(mp4)$/i.test(filename)
+                }
+
                 const handleFileChange = (file) => {
                     fileList.value = [...fileList.value, file]
                 }
@@ -605,6 +617,7 @@ Content-Type: multipart/form-data
                     Document,
                     toggleTheme,
                     isImage,
+                    isVideo,
                     handleFileChange,
                     handleFileRemove,
                     clearFiles,
