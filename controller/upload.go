@@ -85,6 +85,11 @@ func UploadForm(c *gin.Context) {
 		var resp *http.Response
 		var url string
 
+		// 年月格式存储
+		now := time.Now()
+		year := fmt.Sprintf("%d", now.Year())
+		month := fmt.Sprintf("%02d", now.Month())
+
 		switch config.Upload.Method {
 		case "stream":
 			// 流式上传到文件服务器
@@ -95,7 +100,7 @@ func UploadForm(c *gin.Context) {
 				continue
 			}
 
-			filepath := config.Alist.Path + "/" + processedFileName
+			filepath := config.Alist.Path + "/" + year + "/" + month + "/" + processedFileName
 			req.Header.Set("Content-Type", "application/octet-stream")
 			req.Header.Set("File-Path", filepath)
 			req.Header.Set("Authorization", utils.GetToken())
@@ -129,7 +134,8 @@ func UploadForm(c *gin.Context) {
 				continue
 			}
 
-			filepath := config.Alist.Path + "/" + processedFileName
+			// filepath := config.Alist.Path + "/" + processedFileName
+			newFilePath := config.Alist.Path + "/" + year + "/" + month + "/" + processedFileName
 			uploadURL := config.Alist.APIURL + "/api/fs/form"
 			req, err := http.NewRequest("PUT", uploadURL, body)
 			if err != nil {
@@ -138,20 +144,17 @@ func UploadForm(c *gin.Context) {
 			}
 
 			req.Header.Set("Content-Type", writer.FormDataContentType())
-			req.Header.Set("File-Path", filepath)
+			req.Header.Set("File-Path", newFilePath)
 			req.Header.Set("Authorization", utils.GetToken())
 
 			client := &http.Client{}
 			resp, _ = client.Do(req)
 			if resp != nil {
-				url, _ = utils.GetFsLink(filepath)
+				url, _ = utils.GetFsLink(newFilePath)
 			}
 
 		case "local":
 			// 存储到本地
-			now := time.Now()
-			year := fmt.Sprintf("%d", now.Year())
-			month := fmt.Sprintf("%02d", now.Month())
 
 			// 构建存储路径：i/年/月/文件名
 			storePath := filepath.Join(strings.ReplaceAll(config.Upload.LocalUploadPath, "/", ""), year, month)
