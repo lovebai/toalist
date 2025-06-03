@@ -31,7 +31,7 @@ func initConf() {
 		defaultConfig := `
 [base]
 mode = release
-host = 127.0.0.1
+host = 0.0.0.0
 port = 5245
 url = http://127.0.0.1:5245
 
