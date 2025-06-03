@@ -7,3 +7,5 @@ Dockerfile
 .github
 .idea
 .vscode 
+images/*
+/images
