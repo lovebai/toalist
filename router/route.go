@@ -4,7 +4,6 @@ import (
 	"embed"
 	"html/template"
 	"log/slog"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lovebai/toalist/conf"
@@ -35,16 +34,8 @@ func FileManagerRoutes(r *gin.Engine) {
 // 首页路由，不分组了
 func IndexPage(router *gin.Engine) {
 	router.GET("/", controller.Index)
-	router.GET(conf.GlobalConfig.Upload.LocalUploadPath, NullPage)
+	router.GET(conf.GlobalConfig.Upload.LocalUploadPath, controller.NullPage)
 	router.POST("/api/upload", controller.UploadForm)
-}
-
-// 404
-func NullPage(c *gin.Context) {
-	html := `<html><head><title>404 Not Found</title></head><body><center><h1>404 Not Found</h1></center>
-<hr><center>ToAlist For Golang / <a href="/" style="text-decoration: none;color: #03A9F4;">Go To Home</a></center>
-</body></html>`
-	c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(html))
 }
 
 // 初始化路由和模板
@@ -70,7 +61,7 @@ func InitRouter(views embed.FS) {
 		slog.Info("已选择本地(local)模式，上传文件路径为：" + conf.GlobalConfig.Upload.LocalUploadPath)
 	}
 
-	router.NoRoute(NullPage)
+	router.NoRoute(controller.NullPage)
 	IndexPage(router)
 
 	server := conf.GlobalConfig.Base.Host + ":" + conf.GlobalConfig.Base.Port

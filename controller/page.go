@@ -22,3 +22,11 @@ func FileManagerPage(c *gin.Context) {
 		"upload_path": config.Upload.LocalUploadPath + "/",
 	})
 }
+
+// 404
+func NullPage(c *gin.Context) {
+	html := `<html><head><title>404 Not Found</title></head><body><center><h1>404 Not Found</h1></center>
+<hr><center>ToAlist For Golang / <a href="/" style="text-decoration: none;color: #03A9F4;">Go To Home</a></center>
+</body></html>`
+	c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(html))
+}
