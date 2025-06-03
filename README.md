@@ -192,7 +192,7 @@ docker-compose up -d
 Docker 命令：
 
 ```bash
-docker exec container_name "./main -md5 your_password"
+docker exec container_name /app/main -md5 your_password
 ```
 
 复制输出并将其粘贴到 `conf.ini` 文件的 `[login]` 部分。
@@ -206,7 +206,7 @@ docker exec container_name "./main -md5 your_password"
 Docker 命令：
 
 ```bash
-docker exec container_name "./main -md5 your_alist_password"
+docker exec container_name /app/main -aes your_alist_password
 ```
 
 复制输出并将其粘贴到 `conf.ini` 文件的 `[alist]` 部分。
