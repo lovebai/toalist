@@ -122,6 +122,15 @@
         .file-name-row:hover .folder-delete-btn {
             opacity: 1;
         }
+        /* 视频预览样式 */
+        .position-relative {
+            position: relative;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .position-relative:hover .bi-play-circle {
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
@@ -146,14 +155,15 @@
 
     <!-- 文件预览模态框 -->
     <div class="modal fade preview-modal" id="previewModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">文件预览</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <img id="previewImage" class="preview-image" style="display: none;">
+                    <img id="previewImage" class="preview-image" style="display: none; max-height: 70vh; width: auto; margin: 0 auto;">
+                    <video id="previewVideo" class="preview-image" controls style="display: none; max-height: 70vh; width: auto; margin: 0 auto;"></video>
                     <div id="fileLink" class="file-link mt-3" style="display: none;"></div>
                 </div>
             </div>
@@ -271,7 +281,9 @@
                 
                 const ext = file.name.split('.').pop().toLowerCase();
                 const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+                const videoExts = ['mp4'];
                 const isImage = imageExts.includes(ext);
+                const isVideo = videoExts.includes(ext);
                 
                 if (file.isDir) {
                     const previewImg = document.createElement('div');
@@ -284,10 +296,42 @@
                     previewImg.src = `/${file.uploadPath}/${file.path.replace(/\\/g, '/')}`;
                     previewImg.alt = file.name;
                     fileItem.appendChild(previewImg);
+                } else if (isVideo) {
+                    const previewVideo = document.createElement('video');
+                    previewVideo.className = 'file-preview-thumbnail';
+                    previewVideo.src = `/${file.uploadPath}/${file.path.replace(/\\/g, '/')}`;
+                    previewVideo.preload = 'metadata';
+                    previewVideo.muted = true;
+                    previewVideo.controls = false;
+                    
+                    // 添加播放按钮覆盖层
+                    const videoContainer = document.createElement('div');
+                    videoContainer.className = 'position-relative';
+                    
+                    const playIcon = document.createElement('div');
+                    playIcon.className = 'position-absolute top-50 start-50 translate-middle';
+                    playIcon.innerHTML = '<i class="bi bi-play-circle fs-1 text-white"></i>';
+                    playIcon.style.opacity = '0.8';
+                    playIcon.style.zIndex = '1';
+                    
+                    videoContainer.appendChild(previewVideo);
+                    videoContainer.appendChild(playIcon);
+                    fileItem.appendChild(videoContainer);
+                    
+                    // 悬停时预览视频
+                    videoContainer.addEventListener('mouseenter', () => {
+                        previewVideo.currentTime = 1;
+                        previewVideo.play().catch(e => console.log('视频预览播放失败:', e));
+                    });
+                    
+                    videoContainer.addEventListener('mouseleave', () => {
+                        previewVideo.pause();
+                        previewVideo.currentTime = 0;
+                    });
                 } else {
                     const previewPlaceholder = document.createElement('div');
                     previewPlaceholder.className = 'preview-placeholder';
-                    previewPlaceholder.innerHTML = '仅支持图片文件预览';
+                    previewPlaceholder.innerHTML = '仅支持图片和MP4文件预览';
                     fileItem.appendChild(previewPlaceholder);
                 }
                 
@@ -364,10 +408,12 @@
         function getFileIcon(filename) {
             const ext = filename.split('.').pop().toLowerCase();
             const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+            const videoExts = ['mp4'];
             const docExts = ['doc', 'docx', 'pdf', 'txt'];
             const codeExts = ['js', 'html', 'css', 'py', 'java', 'cpp'];
             
             if (imageExts.includes(ext)) return 'bi-image';
+            if (videoExts.includes(ext)) return 'bi-film';
             if (docExts.includes(ext)) return 'bi-file-text';
             if (codeExts.includes(ext)) return 'bi-file-code';
             return 'bi-file';
@@ -377,8 +423,10 @@
         function handleFileClick(file) {
             const ext = file.name.split('.').pop().toLowerCase();
             const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+            const videoExts = ['mp4'];
             
             const previewImage = document.getElementById('previewImage');
+            const previewVideo = document.getElementById('previewVideo');
             const fileLink = document.getElementById('fileLink');
             const fileUrl = `${window.location.origin}/${file.uploadPath}/${file.path.replace(/\\/g, '/')}`;
             
@@ -399,11 +447,16 @@
                 </div>
             `;
             
+            // 重置所有预览元素
+            previewImage.style.display = 'none';
+            previewVideo.style.display = 'none';
+            
             if (imageExts.includes(ext)) {
                 previewImage.style.display = 'block';
                 previewImage.src = fileUrl;
-            } else {
-                previewImage.style.display = 'none';
+            } else if (videoExts.includes(ext)) {
+                previewVideo.style.display = 'block';
+                previewVideo.src = fileUrl;
             }
             
             previewModal.show();
