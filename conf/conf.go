@@ -6,7 +6,6 @@ type ConfigType struct {
 	Base   BaseConfig   `ini:"base"`
 	Alist  AlistConfig  `ini:"alist"`
 	Upload UploadConfig `ini:"upload"`
-	Page   PageConfig   `ini:"page"`
 	Login  LoginConfig  `ini:"login"`
 }
 
@@ -14,6 +13,7 @@ type BaseConfig struct {
 	Mode string `ini:"mode"`
 	Host string `ini:"host"`
 	Port string `ini:"port"`
+	Url  string `ini:"url"`
 }
 
 type AlistConfig struct {
@@ -30,13 +30,6 @@ type UploadConfig struct {
 	MaxFileSize      int    `ini:"max_file_size"`
 	KeepOriginalName bool   `ini:"keep_original_name"`
 	LocalUploadPath  string `ini:"local_upload_path"`
-}
-
-type PageConfig struct {
-	SiteUrl string `ini:"site_url"`
-	Title   string `ini:"site_title"`
-	Desc    string `ini:"site_desc"`
-	Icon    string `ini:"site_icon"`
 }
 
 type LoginConfig struct {

@@ -281,7 +281,7 @@
                 } else if (isImage) {
                     const previewImg = document.createElement('img');
                     previewImg.className = 'file-preview-thumbnail';
-                    previewImg.src = `[[.upload_path]]${file.path.replace(/\\/g, '/')}`;
+                    previewImg.src = `/${file.uploadPath}/${file.path.replace(/\\/g, '/')}`;
                     previewImg.alt = file.name;
                     fileItem.appendChild(previewImg);
                 } else {
@@ -330,7 +330,7 @@
                     copyBtn.innerHTML = '<i class="bi bi-clipboard"></i> 复制';
                     copyBtn.onclick = (e) => {
                         e.stopPropagation();
-                        const fileUrl = `${window.location.origin}[[.upload_path]]${file.path.replace(/\\/g, '/')}`;
+                        const fileUrl = `${window.location.origin}/${file.uploadPath}/${file.path.replace(/\\/g, '/')}`;
                         copyToClipboard(fileUrl);
                     };
 
@@ -380,7 +380,7 @@
             
             const previewImage = document.getElementById('previewImage');
             const fileLink = document.getElementById('fileLink');
-            const fileUrl = `${window.location.origin}[[.upload_path]]${file.path.replace(/\\/g, '/')}`;
+            const fileUrl = `${window.location.origin}/${file.uploadPath}/${file.path.replace(/\\/g, '/')}`;
             
             // 始终显示文件链接
             fileLink.style.display = 'block';

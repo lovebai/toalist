@@ -172,7 +172,7 @@ func UploadForm(c *gin.Context) {
 			}
 
 			// 构建访问URL
-			url = config.Page.SiteUrl + "/" + filepath.ToSlash(fullPath)
+			url = config.Base.Url + "/" + filepath.ToSlash(fullPath)
 		default:
 			// 未开启上传功能
 			c.JSON(http.StatusForbidden, gin.H{

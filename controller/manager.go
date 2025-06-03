@@ -23,11 +23,12 @@ func InitManager() {
 
 // FileInfo 文件信息结构体
 type FileInfo struct {
-	Name    string `json:"name"`
-	Path    string `json:"path"`
-	IsDir   bool   `json:"isDir"`
-	Size    int64  `json:"size"`
-	ModTime string `json:"modTime"`
+	Name       string `json:"name"`
+	Path       string `json:"path"`
+	IsDir      bool   `json:"isDir"`
+	Size       int64  `json:"size"`
+	ModTime    string `json:"modTime"`
+	UploadPath string `json:"uploadPath"`
 }
 
 // CreateDirectory 创建目录
@@ -244,11 +245,12 @@ func ListDirectory(c *gin.Context) {
 		}
 
 		fileInfo := FileInfo{
-			Name:    entry.Name(),
-			Path:    filepath.Join(path, entry.Name()),
-			IsDir:   entry.IsDir(),
-			Size:    info.Size(),
-			ModTime: info.ModTime().Format("2006-01-02 15:04:05"),
+			Name:       entry.Name(),
+			Path:       filepath.Join(path, entry.Name()),
+			IsDir:      entry.IsDir(),
+			Size:       info.Size(),
+			ModTime:    info.ModTime().Format("2006-01-02 15:04:05"),
+			UploadPath: BaseUploadDir,
 		}
 		files = append(files, fileInfo)
 	}
