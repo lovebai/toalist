@@ -46,7 +46,6 @@ func ProxyRoutes(r *gin.Engine) {
 	{
 		proxyGroup.Any("/*path", controller.Proxy)
 	}
-	slog.Info("Alist代理已启用，代理地址为：/dw")
 }
 
 // 初始化路由和模板
