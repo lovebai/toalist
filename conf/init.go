@@ -33,6 +33,7 @@ func initConf() {
 mode = release
 host = 127.0.0.1
 port = 5245
+url = http://127.0.0.1:5245
 
 [alist]
 alist_url = 
@@ -47,12 +48,6 @@ allow_types = jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,7z
 max_file_size = 50 
 keep_original_name = true
 local_upload_path = /i
-
-[page]
-site_url = http://127.0.0.1:5245
-site_title = ToAlist For Alist
-site_desc = 站点描述,现代化UI什么等等
-site_icon = https://i.obai.cc/i/favicon.png
 
 [login]
 username = admin
