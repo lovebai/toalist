@@ -24,7 +24,8 @@ func Index(c *gin.Context) {
 			return config.Page.Icon
 		}(),
 	}
-	c.HTML(http.StatusOK, "index", data)
+	// c.HTML(http.StatusOK, "index", data) //为了模板兼容性，我改改改改改改
+	c.HTML(http.StatusOK, "index.html", data)
 }
 
 // 登录页面

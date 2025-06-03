@@ -1,6 +1,8 @@
 package router
 
 import (
+	"embed"
+	"html/template"
 	"log/slog"
 	"net/http"
 
@@ -45,13 +47,20 @@ func NullPage(c *gin.Context) {
 	c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(html))
 }
 
-// 初始化路由
-func InitRouter() {
+// 初始化路由和模板
+func InitRouter(views embed.FS) {
 	gin.SetMode(conf.GlobalConfig.Base.Mode)
 	router := gin.Default()
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.Delims("[[", "]]")
-	router.LoadHTMLGlob("views/**")
+
+	tmpl := template.Must(template.New("").ParseFS(views, "views/*.html"))
+
+	if conf.GlobalConfig.Base.Mode == "debug" {
+		router.LoadHTMLGlob("views/**")
+	} else {
+		router.SetHTMLTemplate(tmpl)
+	}
 
 	if conf.GlobalConfig.Upload.Method == "local" {
 		router.Static(conf.GlobalConfig.Upload.LocalUploadPath, "./"+conf.GlobalConfig.Upload.LocalUploadPath)

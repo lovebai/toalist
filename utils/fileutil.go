@@ -56,3 +56,23 @@ func ProcessFileName(originalName string) string {
 	// 组合新文件名
 	return fmt.Sprintf("%s_%s%s", nameWithoutExt, timestamp, ext)
 }
+
+// https://gin-gonic.com/zh-cn/docs/examples/bind-single-binary-with-template/
+// loadTemplate 加载由 go-assets-builder 嵌入的模板
+// func loadTemplate() (*template.Template, error) {
+// 	t := template.New("")
+// 	for name, file := range Assets.Files {
+// 		if file.IsDir() || !strings.HasSuffix(name, ".html") {
+// 			continue
+// 		}
+// 		h, err := io.ReadAll(file)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		t, err = t.New(name).Parse(string(h))
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 	}
+// 	return t, nil
+// }

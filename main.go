@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
 	"os"
@@ -9,6 +10,9 @@ import (
 	"github.com/lovebai/toalist/router"
 	"github.com/lovebai/toalist/utils"
 )
+
+//go:embed views/*
+var views embed.FS
 
 func main() {
 	md5 := flag.String("md5", "", "生成local模式下的管理员密码，生成后自行填入到conf.ini配置文件中")
@@ -32,7 +36,7 @@ func main() {
 		utils.RefreshToken()
 	}
 
-	// 初始化路由
-	router.InitRouter()
+	// 初始化路由和模板
+	router.InitRouter(views)
 
 }
