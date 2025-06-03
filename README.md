@@ -133,6 +133,7 @@ admin_page = /manager             # 本地文件管理页面路径，按需修�
 ## Docker 部署
 
 github 仓库和 docker hub 仓库，看自己需求使用。
+
 github :
 
 ```
@@ -230,8 +231,8 @@ docker exec container_name "./main -md5 your_alist_password"
 
 ## 技术栈
 
-- 后端：[Golang](https://golang.org/)
-- Web 框架：[Gin](https://github.com/gin-gonic/gin)
+- Golang
+- Gin
 - Vue3
 - Element Plus
 - Bootstrap5
@@ -240,7 +241,4 @@ docker exec container_name "./main -md5 your_alist_password"
 
 [MIT](https://opensource.org/licenses/MIT)
 
-## 致谢
 
-- [Alist](https://github.com/AlistGo/alist) - 后端文件列表系统
-- [Gin](https://github.com/gin-gonic/gin) - 使用的 Web 框架
