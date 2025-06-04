@@ -368,8 +368,8 @@
 
                     <div class="file-list" v-if="fileList.length > 0">
                         <div style="margin-top: 10px;">
-                            <el-button type="primary" @click="submitUpload">开始上传</el-button>
-                            <el-button type="danger" @click="clearFiles">清空文件</el-button>
+                            <el-button type="primary" @click="submitUpload" :loading="uploading">开始上传</el-button>
+                            <el-button type="danger" @click="clearFiles" :disabled="uploading">清空文件</el-button>
                         </div>
                     </div>
                 </div>
@@ -475,7 +475,7 @@ Content-Type: multipart/form-data
                     <p>主要功能：</p>
                     <ul>
                         <li>支持拖拽上传和点击上传</li>
-                        <li>支持图片文件预览</li>
+                        <li>支持图片和MP4视频文件预览</li>
                         <li>自动生成 Markdown、HTML、BBS 等多种格式的链接</li>
                         <li>支持暗色模式</li>
                         <li>支持多文件同时上传</li>
@@ -504,15 +504,13 @@ Content-Type: multipart/form-data
                 const uploadRef = ref(null)
                 const fileList = ref([])
                 const uploadedFiles = ref([])
-                // 从 localStorage 中读取主题设置，如果没有则默认为 false
+                const uploading = ref(false)
                 const isDark = ref(localStorage.getItem('theme') === 'dark')
 
-                // 在组件挂载时应用保存的主题
                 const applyTheme = () => {
                     document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
                 }
 
-                // 页面加载时应用保存的主题
                 applyTheme()
 
                 const Moon = ElementPlusIconsVue.Moon
@@ -521,7 +519,6 @@ Content-Type: multipart/form-data
 
                 const toggleTheme = (val) => {
                     isDark.value = val
-                    // 保存主题设置到 localStorage
                     localStorage.setItem('theme', val ? 'dark' : 'light')
                     applyTheme()
                 }
@@ -551,6 +548,9 @@ Content-Type: multipart/form-data
                 }
 
                 const submitUpload = async () => {
+                    if (uploading.value) return;
+                    uploading.value = true;
+                    
                     const formData = new FormData()
                     fileList.value.forEach(file => {
 						formData.append('sign', Date.now());
@@ -565,7 +565,6 @@ Content-Type: multipart/form-data
                         const result = await response.json()
                         
                         if (result.code === 200 || result.code === 207) {
-                            // 处理上传成功的文件
                             if (result.files && result.files.length > 0) {
                                 result.files.forEach(file => {
                                     uploadedFiles.value.push({
@@ -575,7 +574,6 @@ Content-Type: multipart/form-data
                                 })
                             }
                             
-                            // 处理部分成功的情况
                             if (result.code === 207 && result.errors) {
                                 result.errors.forEach(error => {
                                     ElMessage.warning(error)
@@ -592,6 +590,8 @@ Content-Type: multipart/form-data
                     } catch (error) {
                         ElMessage.error('上传过程中发生错误')
                         console.error(error)
+                    } finally {
+                        uploading.value = false;
                     }
                 }
 
@@ -619,6 +619,7 @@ Content-Type: multipart/form-data
                     Sunny,
                     UploadFilled,
                     Document,
+                    uploading,
                     toggleTheme,
                     isImage,
                     isVideo,
