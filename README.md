@@ -1,4 +1,20 @@
+<div align="center" dir="auto">
+  <a href="https://github.com/lovebai/toalist" rel="nofollow"><img width="300px" alt="logo" src="images/logo.png" data-canonical-src="images/logo.png" style="max-width: 100%;"></a>
+</div>
+
 Toalist 一个基于 Golang 开发的 Web 应用，主要作为 [Alist](https://github.com/AlistGo/alist) 文件列表程序的前置应用。也可不依赖于Alist 独立使用。
+
+## 目录
+- [功能特点](#功能特点)
+- [配置说明](#配置说明)
+- [二进制程序安装](#二进制程序安装)
+- [作为服务运行](#作为服务运行)
+- [Docker 部署](#docker-部署)
+- [密码管理](#密码管理)
+- [效果预览](#效果预览)
+- [Piclist/Picgo和ShareX配置上传](#piclistpicgo和sharex配置上传)
+- [技术栈](#技术栈)
+- [许可证](#许可证)
 
 ## 功能特点
 
@@ -229,6 +245,49 @@ docker exec container_name /app/main -aes your_alist_password
 
 ![1748958148419](images/README/1748958148419.png)
 
+## Piclist/Picgo和ShareX配置上传
+
+### Piclist/Picgo
+
+![1748996726319](images/README/1748996726319.png)
+
+Json配置：
+
+```json
+    "advancedplist": {
+      "_configName": "ToAlist",
+      "body": "{\"sign\":\"this is sign\"}",
+      "formDataKey": "file",
+      "resDataPath": "files.0.url",
+      "endpoint": "http://127.0.0.1:5245/api/upload",
+      "method": "POST",
+      "headers": "",
+      "customPrefix": ""
+    },
+```
+
+## ShareX
+
+![1748996738569](images/README/1748996738569.png)
+
+Json配置：
+
+```json
+{
+  "Version": "17.0.0",
+  "Name": "ToAlist",
+  "DestinationType": "ImageUploader, FileUploader",
+  "RequestMethod": "POST",
+  "RequestURL": "http://127.0.0.1:5245/api/upload",
+  "Body": "MultipartFormData",
+  "Arguments": {
+    "sign": "this is sign"
+  },
+  "FileFormName": "file",
+  "URL": "{json:files[0].url}"
+}
+```
+
 ## 技术栈
 
 - Golang
@@ -240,5 +299,3 @@ docker exec container_name /app/main -aes your_alist_password
 ## 许可证
 
 [MIT](https://opensource.org/licenses/MIT)
-
-
