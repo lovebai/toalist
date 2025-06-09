@@ -89,6 +89,7 @@ func UploadForm(c *gin.Context) {
 		now := time.Now()
 		year := fmt.Sprintf("%d", now.Year())
 		month := fmt.Sprintf("%02d", now.Month())
+		day := fmt.Sprintf("%02d", now.Day())
 
 		switch config.Upload.Method {
 		case "stream":
@@ -100,7 +101,7 @@ func UploadForm(c *gin.Context) {
 				continue
 			}
 
-			filepath := config.Alist.Path + "/" + year + "/" + month + "/" + processedFileName
+			filepath := config.Alist.Path + "/" + year + "/" + month + "/" + day + "/" + processedFileName
 			req.Header.Set("Content-Type", "application/octet-stream")
 			req.Header.Set("File-Path", filepath)
 			req.Header.Set("Authorization", utils.GetToken())
@@ -135,7 +136,7 @@ func UploadForm(c *gin.Context) {
 			}
 
 			// filepath := config.Alist.Path + "/" + processedFileName
-			newFilePath := config.Alist.Path + "/" + year + "/" + month + "/" + processedFileName
+			newFilePath := config.Alist.Path + "/" + year + "/" + month + "/" + day + "/" + processedFileName
 			uploadURL := config.Alist.APIURL + "/api/fs/form"
 			req, err := http.NewRequest("PUT", uploadURL, body)
 			if err != nil {
@@ -157,7 +158,7 @@ func UploadForm(c *gin.Context) {
 			// 存储到本地
 
 			// 构建存储路径：i/年/月/文件名
-			storePath := filepath.Join(strings.ReplaceAll(config.Upload.LocalUploadPath, "/", ""), year, month)
+			storePath := filepath.Join(strings.ReplaceAll(config.Upload.LocalUploadPath, "/", ""), year, month, day)
 
 			// 确保目录存在
 			if err := os.MkdirAll(storePath, 0755); err != nil {
