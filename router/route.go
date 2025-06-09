@@ -4,11 +4,23 @@ import (
 	"embed"
 	"html/template"
 	"log/slog"
+	"net"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lovebai/toalist/conf"
 	"github.com/lovebai/toalist/controller"
 )
+
+// 检查端口是否可用
+func isPortAvailable(host string, port string) bool {
+	ln, err := net.Listen("tcp", host+":"+port)
+	if err != nil {
+		return false
+	}
+	ln.Close()
+	return true
+}
 
 // 文件管理相关的路由
 func FileManagerRoutes(r *gin.Engine) {
@@ -72,7 +84,7 @@ func InitRouter(views embed.FS) {
 	}
 
 	// 根据配置是否启用代理
-	if conf.GlobalConfig.Alist.IsProxy {
+	if conf.GlobalConfig.Alist.IsProxy && conf.GlobalConfig.Upload.Method != "local" {
 		ProxyRoutes(router)
 		slog.Info("已启用对Alist的代理，代理地址为：/dw")
 	}
@@ -81,6 +93,12 @@ func InitRouter(views embed.FS) {
 	IndexPage(router)
 
 	server := conf.GlobalConfig.Base.Host + ":" + conf.GlobalConfig.Base.Port
+
+	if !isPortAvailable(conf.GlobalConfig.Base.Host, conf.GlobalConfig.Base.Port) {
+		slog.Error("当前端口已被占用，请更换端口号后重启服务")
+		os.Exit(1)
+	}
+
 	slog.Info("ToAlist 服务已启动在：http://" + server)
 	router.Run(server)
 }
