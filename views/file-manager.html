@@ -236,7 +236,13 @@
                     }
                 });
                 
-                if (!response.ok) throw new Error('获取文件列表失败');
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = './login';
+                        return;
+                    }
+                    throw new Error('获取文件列表失败');
+                }
                 
                 const data = await response.json();
                 // 确保 data.files 存在，如果不存在则使用空数组
