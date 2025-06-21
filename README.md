@@ -27,6 +27,7 @@ Toalist 一个基于 Golang 开发的 Web 应用，主要作为 [Alist](https://
 - 本地图像加密 （local模式下生效）
 - 对 Alist 后端代理
 - 简易文件管理界面
+- 一键复制所有已上传文件链接地址
 
 ## 配置说明
 
@@ -238,6 +239,7 @@ docker exec container_name /app/main -aes your_alist_password
 ![1748958121325](images/README/1748958121325.png)
 
 ![1748958134935](images/README/1748958134935.png)
+![chrome_Uqb4zfcNVl](images/README/chrome_Uqb4zfcNVl.png)
 
 ### 简易本地文件管理
 
