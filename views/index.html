@@ -317,6 +317,40 @@
         .copyable-input .el-input__wrapper {
             cursor: pointer;
         }
+
+        .bulk-copy-container {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: var(--el-bg-color);
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .bulk-copy-container {
+            background-color: var(--el-bg-color-perview);
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .bulk-copy-header {
+            margin-bottom: 15px;
+        }
+
+        .bulk-copy-header h4 {
+            margin: 0;
+            color: var(--el-text-color-primary);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .bulk-copy-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .bulk-copy-buttons .el-button {
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -371,6 +405,52 @@
                             <el-button type="primary" @click="submitUpload" :loading="uploading">开始上传</el-button>
                             <el-button type="danger" @click="clearFiles" :disabled="uploading">清空文件</el-button>
                         </div>
+                    </div>
+                </div>
+
+                <div class="bulk-copy-container" v-if="uploadedFiles.length > 0">
+                    <div class="bulk-copy-header">
+                        <h4>一键复制所有已上传文件地址</h4>
+                    </div>
+                    <div class="bulk-copy-buttons">
+                        <el-button 
+                            type="primary" 
+                            @click="copyAllUrls"
+                            :icon="Document"
+                        >
+                            复制所有URL直链
+                        </el-button>
+                        <el-button 
+                            type="success" 
+                            @click="copyAllMarkdown"
+                            :icon="Document"
+                            v-if="hasImageFiles"
+                        >
+                            复制所有Markdown格式链接
+                        </el-button>
+                        <el-button 
+                            type="warning" 
+                            @click="copyAllHtml"
+                            :icon="Document"
+                            v-if="hasImageFiles"
+                        >
+                            复制所有HTML格式链接
+                        </el-button>
+                        <el-button 
+                            type="info" 
+                            @click="copyAllBbs"
+                            :icon="Document"
+                            v-if="hasImageFiles"
+                        >
+                            复制所有BBS格式链接
+                        </el-button>
+                        <el-button 
+                            type="danger" 
+                            @click="clearUploadedFiles"
+                            :icon="Delete"
+                        >
+                            清空已上传文件
+                        </el-button>
                     </div>
                 </div>
 
@@ -495,7 +575,7 @@ Content-Type: multipart/form-data
     </div>
 
     <script>
-        const { createApp, ref } = Vue
+        const { createApp, ref, computed } = Vue
         const { ElMessage } = ElementPlus
 
         const app = createApp({
@@ -516,6 +596,8 @@ Content-Type: multipart/form-data
                 const Moon = ElementPlusIconsVue.Moon
                 const Sunny = ElementPlusIconsVue.Sunny
                 const UploadFilled = ElementPlusIconsVue.UploadFilled
+                const Document = ElementPlusIconsVue.Document
+                const Delete = ElementPlusIconsVue.Delete
 
                 const toggleTheme = (val) => {
                     isDark.value = val
@@ -530,6 +612,10 @@ Content-Type: multipart/form-data
                 const isVideo = (filename) => {
                     return /\.(mp4)$/i.test(filename)
                 }
+
+                const hasImageFiles = computed(() => {
+                    return uploadedFiles.value.some(file => isImage(file.name))
+                })
 
                 const handleFileChange = (file) => {
                     fileList.value = [...fileList.value, file]
@@ -609,6 +695,40 @@ Content-Type: multipart/form-data
                     currentView.value = view
                 }
 
+                const copyAllUrls = () => {
+                    const urls = uploadedFiles.value.map(file => file.url).join('\n')
+                    copyToClipboard(urls)
+                }
+
+                const copyAllMarkdown = () => {
+                    const markdown = uploadedFiles.value
+                        .filter(file => isImage(file.name))
+                        .map(file => `![${file.name}](${file.url})`)
+                        .join('\n')
+                    copyToClipboard(markdown)
+                }
+
+                const copyAllHtml = () => {
+                    const html = uploadedFiles.value
+                        .filter(file => isImage(file.name))
+                        .map(file => `<a href='${file.url}' alt='${file.name}'>${file.name}</a>`)
+                        .join('\n')
+                    copyToClipboard(html)
+                }
+
+                const copyAllBbs = () => {
+                    const bbs = uploadedFiles.value
+                        .filter(file => isImage(file.name))
+                        .map(file => `[img]${file.url}[/img]`)
+                        .join('\n')
+                    copyToClipboard(bbs)
+                }
+
+                const clearUploadedFiles = () => {
+                    uploadedFiles.value = []
+                    clearFiles()
+                }
+
                 return {
                     currentView,
                     uploadRef,
@@ -619,6 +739,7 @@ Content-Type: multipart/form-data
                     Sunny,
                     UploadFilled,
                     Document,
+                    Delete,
                     uploading,
                     toggleTheme,
                     isImage,
@@ -628,7 +749,13 @@ Content-Type: multipart/form-data
                     clearFiles,
                     submitUpload,
                     copyToClipboard,
-                    switchView
+                    switchView,
+                    copyAllUrls,
+                    copyAllMarkdown,
+                    copyAllHtml,
+                    copyAllBbs,
+                    hasImageFiles,
+                    clearUploadedFiles
                 }
             }
         })
