@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lovebai/toalist/conf"
 	"github.com/lovebai/toalist/controller"
+	"github.com/lovebai/toalist/src"
 )
 
 // 检查端口是否可用
@@ -71,8 +72,10 @@ func InitRouter(views embed.FS) {
 
 	if conf.GlobalConfig.Base.Mode == "debug" {
 		router.LoadHTMLGlob("views/**")
+		router.Static("/static", "./static")
 	} else {
 		router.SetHTMLTemplate(tmpl)
+		router.StaticFS("/static", src.Assets)
 	}
 
 	if conf.GlobalConfig.Upload.Method == "local" {
